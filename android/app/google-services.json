@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "814554543581",
+    "project_id": "cep-finder-f15f3",
+    "storage_bucket": "cep-finder-f15f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814554543581:android:84b9efb20318454cc57234",
+        "android_client_info": {
+          "package_name": "br.com.cep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqAgn0OZ8mxd4kEdEbQTYWNGSOBT6i8kA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814554543581:android:24c3b1aed4c06745c57234",
+        "android_client_info": {
+          "package_name": "br.com.cepfinder.cep_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqAgn0OZ8mxd4kEdEbQTYWNGSOBT6i8kA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
