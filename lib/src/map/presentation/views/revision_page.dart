@@ -44,7 +44,7 @@ class _RevisionPageState extends State<RevisionPage> {
     return BlocListener<OnMapBloc, OnMapState>(
       listener: (context, state) {
         if (state is SaveAddressState) {
-          context.go('/map');
+          context.go('/Booklet');
         }
       },
       child: Scaffold(

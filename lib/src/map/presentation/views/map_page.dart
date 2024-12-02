@@ -15,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -31,7 +30,6 @@ class _MapPageState extends State<MapPage> {
   final TextEditingController cepController = TextEditingController();
   final FocusNode cepFocusNode = FocusNode();
   GoogleMapController? _controller;
-  Location location = Location();
   bool isShowSearchIcon = false;
   bool isShowHistory = false;
   Set<Marker> markers = {};
