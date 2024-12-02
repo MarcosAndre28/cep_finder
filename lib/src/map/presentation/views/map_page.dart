@@ -305,7 +305,7 @@ class _MapPageState extends State<MapPage> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            location.zipcode,
+                            location.zipcode.toString().toCepFormat(),
                             style: TextStyle(
                               fontSize: context.height * 0.026,
                               fontFamily: Fonts.roboto,
@@ -319,7 +319,7 @@ class _MapPageState extends State<MapPage> {
                                 ? '${location.street} - ${location.city}, ${location.state}'
                                 : '${location.city}, ${location.state}',
                             style: TextStyle(
-                              fontSize: context.height * 0.018,
+                              fontSize: context.height * 0.020,
                               fontFamily: Fonts.roboto,
                               fontWeight: FontWeight.w500,
                               color: Colours.quartz,
