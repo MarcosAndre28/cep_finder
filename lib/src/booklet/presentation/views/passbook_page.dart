@@ -1,14 +1,12 @@
-import 'package:brasil_fields/brasil_fields.dart';
-import 'package:cep_finder/core/common/widgets/bottom_navigation_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cep_finder/core/common/widgets/default_text_form_field.dart';
-import 'package:cep_finder/core/extensions/context_extension.dart';
-import 'package:cep_finder/core/res/colours.dart';
 import 'package:cep_finder/src/map/data/model/address_model.dart';
 import 'package:cep_finder/src/map/presentation/bloc/on_map_bloc.dart';
+import 'package:cep_finder/core/res/colours.dart';
 import 'package:cep_finder/src/map/presentation/widgets/list_search_items_map.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/common/widgets/bottom_navigation_bar.dart';
 
 class BookletPage extends StatefulWidget {
   const BookletPage({super.key});
@@ -19,17 +17,23 @@ class BookletPage extends StatefulWidget {
 }
 
 class _BookletPageState extends State<BookletPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController cepController = TextEditingController();
-  final FocusNode cepFocusNode = FocusNode();
+  final TextEditingController searchController = TextEditingController();
+
   bool isShowSearchIcon = false;
   bool isShowHistory = false;
   List<AddressModel> addressList = [];
+  List<AddressModel> filteredAddressList = [];
 
   @override
   void initState() {
     super.initState();
     getHistory();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
   }
 
   @override
@@ -42,6 +46,7 @@ class _BookletPageState extends State<BookletPage> {
             if (state.addressModelList.isNotEmpty) {
               setState(() {
                 addressList = state.addressModelList;
+                filteredAddressList = state.addressModelList;
               });
             }
           }
@@ -49,57 +54,53 @@ class _BookletPageState extends State<BookletPage> {
         child: onMapBloc is MapLoadingState
             ? const Center(child: CircularProgressIndicator())
             : Container(
-                padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-              child: Column(
-                        children: [
+          padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
+          child: Column(
+            children: [
               Material(
                 elevation: 15,
                 borderRadius: BorderRadius.circular(10),
                 shadowColor: Colors.black.withOpacity(0.5),
-                child: Form(
-                  key: _formKey,
-                  child: DefaultTextFormField(
-                    controller: cepController,
-                    focusNode: cepFocusNode,
-                    contentPadding: const EdgeInsets.all(15),
-                    hintText: 'Buscar',
-                    hintStyle: const TextStyle(
-                      color: Colours.grey,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                    ),
-                    textStyle: const TextStyle(
-                      color: Colours.grey,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Colours.grey,
-                      size: 30,
-                    ),
-                    suffixIcon: cepController.text.isNotEmpty
-                        ? const Icon(Icons.close)
-                        : null,
-                    keyboardType: TextInputType.number,
-                    onChanged: (text) {
-                      setState(() {
-                        isShowHistory = text.isNotEmpty;
-                      });
-                    },
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      CepInputFormatter(),
-                    ],
+                child: DefaultTextFormField(
+                  controller: searchController,
+                  contentPadding: const EdgeInsets.all(15),
+                  keyboardType: TextInputType.text,
+                  hintText: 'Buscar',
+                  hintStyle: const TextStyle(
+                    color: Colours.grey,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
                   ),
+                  textStyle: const TextStyle(
+                    color: Colours.grey,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: Colours.grey,
+                    size: 30,
+                  ),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? const Icon(Icons.close)
+                      : null,
+                  onChanged: (text) {
+                    setState(() {
+                      isShowHistory = text.isNotEmpty;
+                      filteredAddressList = addressList
+                          .where((address) =>
+                          normalizeAddress(address)
+                              .contains(normalizeSearchText(text)))
+                          .toList();
+                    });
+                  },
                 ),
               ),
-
               Expanded(
                 child: ListView.builder(
-                  itemCount: addressList.length,
+                  itemCount: filteredAddressList.length,
                   itemBuilder: (context, index) {
-                    final addressData = addressList[index];
+                    final addressData = filteredAddressList[index];
                     return ListSearchItemsMapWidget(
                       zipCode: addressData.zipcode,
                       street: addressData.street ?? '',
@@ -112,9 +113,9 @@ class _BookletPageState extends State<BookletPage> {
                   },
                 ),
               ),
-                        ],
-                      ),
-            ),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: const BottomNavigationBarWidget(
         currentIndex: 1,
@@ -125,5 +126,17 @@ class _BookletPageState extends State<BookletPage> {
   void getHistory() {
     context.read<OnMapBloc>().add(const GetSavedAddressEvent());
   }
-}
 
+  String normalizeAddress(AddressModel address) {
+    return '${removeAccents((address.street ?? '').toLowerCase())} ${removeAccents((address.city ?? '').toLowerCase())} ${(address.zipcode ?? '').toLowerCase()}';
+  }
+
+  String normalizeSearchText(String text) {
+    return removeAccents(text.toLowerCase());
+  }
+  String removeAccents(String text) {
+    return text.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
+  }
+
+
+}

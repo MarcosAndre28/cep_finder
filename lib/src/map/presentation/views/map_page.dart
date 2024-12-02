@@ -69,14 +69,6 @@ class _MapPageState extends State<MapPage> {
               });
             }
           }
-
-          if (state is MapErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-              ),
-            );
-          }
         },
         child: Stack(
           children: [
@@ -88,6 +80,7 @@ class _MapPageState extends State<MapPage> {
               onMapCreated: _onMapCreated,
               markers: markers,
               compassEnabled: false,
+              zoomControlsEnabled: false,
             ),
             if (isShowHistory && addressList.isNotEmpty)
               onMapBloc is MapLoadingState
