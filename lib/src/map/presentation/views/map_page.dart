@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cep_finder/core/common/widgets/bottom_navigation_bar.dart';
@@ -17,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -72,7 +70,7 @@ class _MapPageState extends State<MapPage> {
             }
           }
 
-          if (state is MapError) {
+          if (state is MapErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -123,6 +121,7 @@ class _MapPageState extends State<MapPage> {
                               street: addressData.street ?? '',
                               city: addressData.city,
                               onTap: (cep) {
+                                cepFocusNode.unfocus();
                                 _addMarker(addressData);
                               },
                             );
@@ -388,5 +387,39 @@ class _MapPageState extends State<MapPage> {
 
   void getHistory() {
     context.read<OnMapBloc>().add(const GetSavedAddressEvent());
+  }
+
+  void showErrorPopup(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Erro',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+          content: Text(
+            errorMessage,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Fechar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

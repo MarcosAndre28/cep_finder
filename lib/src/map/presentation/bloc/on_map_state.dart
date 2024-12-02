@@ -37,8 +37,8 @@ class MapCepDataState extends OnMapState {
   List<AddressModel> get props => [addressModel];
 }
 
-class MapError extends OnMapState {
-  const MapError(this.message);
+class MapErrorState extends OnMapState {
+  const MapErrorState(this.message);
 
   final String message;
 

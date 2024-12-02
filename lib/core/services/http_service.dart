@@ -1,54 +1,55 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cep_finder/core/errors/api_exception.dart';
+import 'package:cep_finder/core/errors/connection_exception.dart';
 import 'package:cep_finder/core/utils/constants.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:http/http.dart' as http;
 
 abstract class IHttpService {
-  Future<Response<T>> get<T>(
-      String endpoint, [
-        Map<String, dynamic>? queryParameters,
-      ]);
+  Future<T> get<T>({
+    required String path,
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  });
 }
 
 class HttpServiceImpl implements IHttpService {
-  HttpServiceImpl() {
-    _dio.options.baseUrl = Constants.baseApiUrl;
-    _dio.interceptors.addAll([
-      PrettyDioLogger(
-        requestHeader: false,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        maxWidth: 90,
-        enabled: kDebugMode,
-        filter: (options, args) {
-          if (options.path.contains('/posts')) {
-            return false;
-          }
-          return !args.isResponse || !args.hasUint8ListData;
-        },
-      ),
-    ]);
+  HttpServiceImpl(this.httpClient);
+
+  final http.Client httpClient;
+
+  String _getBaseUrl() {
+    return Constants.baseApiUrl;
   }
 
-  final Dio _dio = Dio();
-
-
   @override
-  Future<Response<T>> get<T>(
-      String endpoint, [
-        Map<String, dynamic>? queryParameters,
-      ]) async {
+  Future<T> get<T>({
+    required String path,
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+    bool ecommerceApi = false,
+  }) async {
     try {
-      final response = await _dio.get<T>(
-        endpoint,
+      final uri = Uri.parse(_getBaseUrl() + path).replace(
         queryParameters: queryParameters,
       );
-      return response;
+
+      final response = await httpClient.get(uri);
+
+      if (response.statusCode == HttpStatus.ok) {
+        return json.decode(
+          utf8.decode(response.bodyBytes),
+        ) as T;
+      } else {
+        throw ApiException(apiMessage: response.body, httpStatusCode: response.statusCode);
+      }
     } catch (e) {
-      rethrow;
+      if (e is ApiException) {
+        rethrow;
+      }
+
+      throw ConnectionException(originalError: e.toString());
     }
   }
 }

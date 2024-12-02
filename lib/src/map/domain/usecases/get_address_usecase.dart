@@ -1,15 +1,20 @@
-import 'package:cep_finder/core/usecase/usecase.dart';
-import 'package:cep_finder/core/utils/typedefs.dart';
 import 'package:cep_finder/src/map/data/model/address_model.dart';
 import 'package:cep_finder/src/map/domain/repos/on_map_repo.dart';
 
-class IGetAddressUseCase extends UseCaseWithParams<void, String> {
-  const IGetAddressUseCase(this._repo);
+abstract class IGetAddressUseCase {
+  Future<AddressModel> call({
+    required String zipcode,
+  });
+}
+
+class GetAddressUseCase implements IGetAddressUseCase {
+  GetAddressUseCase(this._repo);
 
   final OnMapRepo _repo;
 
   @override
-  ResultFuture<AddressModel> call(String params) async => _repo.getAddress(
-        cep: params,
-      );
+  Future<AddressModel> call({
+    required String zipcode,
+  }) =>
+      _repo.getAddress(cep: zipcode);
 }

@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:cep_finder/core/errors/bloc_safe_run.dart';
+import 'package:cep_finder/core/utils/constants.dart';
 import 'package:cep_finder/src/map/data/model/address_model.dart';
 import 'package:cep_finder/src/map/domain/usecases/get_address_usecase.dart';
 import 'package:cep_finder/src/map/domain/usecases/get_saved_address_usecase.dart';
@@ -18,9 +20,9 @@ class OnMapBloc extends Bloc<OnMapEvent, OnMapState> {
         _getSavedAddressUseCase = getSavedAddress,
         _saveAddressUseCase = saveAddress,
         super(const MapInitial()) {
-    on<GetCepDataEvent>(_getCepDataHandler);
-    on<GetSavedAddressEvent>(_getSavedAddressHandler);
-    on<SaveAddressEvent>(_saveAddressHandler);
+    onSafe<GetCepDataEvent>(_getCepDataHandler, errorState: (message) => const MapErrorState(Constants.message));
+    onSafe<GetSavedAddressEvent>(_getSavedAddressHandler, errorState: (message) => MapErrorState(message));
+    onSafe<SaveAddressEvent>(_saveAddressHandler, errorState: (message) => MapErrorState(message));
   }
 
   final IGetAddressUseCase _getAddressUseCase;
@@ -32,10 +34,9 @@ class OnMapBloc extends Bloc<OnMapEvent, OnMapState> {
     Emitter<OnMapState> emit,
   ) async {
     emit(const MapLoadingState());
-    final result = await _getAddressUseCase(event.cep);
-    result.fold(
-      (failure) => emit(MapError(failure.message)),
-      (address) => emit(MapCepDataState(addressModel: address)),
+    final result = await _getAddressUseCase(zipcode: event.cep);
+    emit(
+      MapCepDataState(addressModel: result),
     );
   }
 
@@ -45,21 +46,15 @@ class OnMapBloc extends Bloc<OnMapEvent, OnMapState> {
   ) async {
     emit(const MapLoadingState());
     final result = await _getSavedAddressUseCase();
-    result.fold(
-      (failure) => emit(MapError(failure.message)),
-      (address) => emit(GetSavedAddressState(address)),
-    );
+    emit(GetSavedAddressState(result));
   }
 
-   Future<void> _saveAddressHandler(
+  Future<void> _saveAddressHandler(
     SaveAddressEvent event,
     Emitter<OnMapState> emit,
   ) async {
     emit(const MapLoadingState());
-    final result = await _saveAddressUseCase(event.address);
-    result.fold(
-      (failure) => emit(MapError(failure.message)),
-      (address) => emit(const SaveAddressState()),
-    );
+    await _saveAddressUseCase(addressModel: event.address);
+    emit(const SaveAddressState());
   }
 }

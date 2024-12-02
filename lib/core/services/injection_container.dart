@@ -9,22 +9,23 @@ import 'package:cep_finder/src/map/domain/usecases/save_address_usecase.dart';
 import 'package:cep_finder/src/map/presentation/bloc/on_map_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   final fireStore =  FirebaseFirestore.instance;
   sl
-    ..registerLazySingleton<IHttpService>(HttpServiceImpl.new)
+    ..registerLazySingleton<http.Client>(http.Client.new)
+    ..registerLazySingleton<IHttpService>(() => HttpServiceImpl(sl()))
     ..registerLazySingleton<OnMapDataSource>(() => OnMapDataSourceImpl(sl()))
     ..registerLazySingleton<OnMapLocalDataSource>(
       () => OnMapLocalDataSourceImpl(sl()),
     )
     ..registerLazySingleton<OnMapRepo>(() => OnMapRepoImpl(sl(), sl()))
-    ..registerLazySingleton(() => IGetAddressUseCase(sl()))
-    ..registerLazySingleton(() => ISaveAddressUseCase(sl()))
-    ..registerLazySingleton(() => IGetSavedAddressUseCase(sl()))
+    ..registerLazySingleton<IGetAddressUseCase>(() => GetAddressUseCase(sl()))
+    ..registerLazySingleton<ISaveAddressUseCase>(() => SaveAddressUseCase(sl()))
+    ..registerLazySingleton<IGetSavedAddressUseCase>(() => GetSavedAddressUseCase(sl()))
     ..registerFactory(
       () => OnMapBloc(
         getAddress: sl(),

@@ -1,62 +1,43 @@
-import 'package:cep_finder/core/common/widgets/bottom_navigation_bar.dart';
-import 'package:cep_finder/src/booklet/presentation/views/passbook_page.dart';
-import 'package:cep_finder/src/map/presentation/views/map_page.dart';
+import 'package:cep_finder/core/extensions/context_extension.dart';
+import 'package:cep_finder/core/res/colours.dart';
+import 'package:cep_finder/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
 
-  static const routeName = '/home';
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+
+  static const routeName = '/splash';
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int bottomSelectedIndex = 0;
+class _SplashPageState extends State<SplashPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 5), () {
+      if(mounted){
+        context.go('/map');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home Page")),
-      body: _buildPageView(context),
-      bottomNavigationBar: BottomNavigationBarWidget(
-        currentIndex: bottomSelectedIndex,
+      backgroundColor: Colours.tealBlue,
+      body: Center(
+        child: Lottie.asset(
+          height: context.height * 0.4,
+          MediaRes.splashAnimation,
+          fit: BoxFit.cover,),
       ),
     );
   }
 
-  // Método para renderizar o conteúdo da página dependendo da navegação
-  Widget _buildPageView(BuildContext context) {
-    return Navigator(
-      onGenerateRoute: (settings) {
-        // Gerenciar as páginas dentro da HomePage
-        if (settings.name == '/map') {
-          return MaterialPageRoute(
-            builder: (_) {
-              return const MapPage();  // Aqui, o MapPage recebe a injeção
-            },
-          );
-        } else if (settings.name == '/booklet') {
-          return MaterialPageRoute(
-            builder: (_) => const BookletPage(),
-          );
-        }
-        return MaterialPageRoute(builder: (_) => const SizedBox.shrink());
-      },
-    );
-  }
-
-  // Método para navegação do BottomNavigationBar
-  void _bottomTapped(int index) {
-    setState(() {
-      bottomSelectedIndex = index;
-      if (index == 0) {
-        context.go('/home/map');  // Vai navegar para /home/map sem sair da HomePage
-      } else if (index == 1) {
-        context.go('/home/booklet');  // Vai navegar para /home/booklet
-      }
-    });
-  }
 }

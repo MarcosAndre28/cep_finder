@@ -6,11 +6,7 @@ class MediaRes{
   static const String splashLoadingGif = 'assets/icons/splash_loading.gif';
   static const String markerItem = 'assets/icons/marker_item.svg';
   static const String savedZipcode = 'assets/icons/saved_zipcode.svg';
-
-
-  /// Backgrounds
-  static const pageUnderConstruction = 'assets/lottie/page_under_construction.json';
-  static const onBoardingBackground = 'assets/images/onBoarding_background.png';
+  static const String splashAnimation = 'assets/lottie/map_marker.json';
 
 
   /// FILE
