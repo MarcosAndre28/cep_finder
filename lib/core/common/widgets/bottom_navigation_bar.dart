@@ -21,39 +21,30 @@ class BottomNavigationBarWidget extends StatefulWidget {
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: widget.currentIndex,
-      onTap: _bottomTapped,
-      elevation: 0,
-      enableFeedback: false,
-      selectedItemColor: Colours.tealBlue,
-      unselectedItemColor: Colours.grey,
-      backgroundColor: Colors.white,
-      type: BottomNavigationBarType.fixed,
-      mouseCursor: SystemMouseCursors.none,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      selectedLabelStyle: const TextStyle(
-        fontFamily: Fonts.roboto,
-        fontWeight: FontWeight.w600,
-        fontSize: 16,
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -1),
+          ),
+        ],
       ),
-      unselectedLabelStyle: const TextStyle(
-        fontFamily: Fonts.roboto,
-        fontWeight: FontWeight.w600,
-        fontSize: 16,
+      child: BottomNavigationBar(
+        currentIndex: widget.currentIndex,
+        onTap: _bottomTapped,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: _buildIcon(MediaRes.mapIcon, 0),
+            label: 'Mapa',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildIcon(MediaRes.bookletIcon, 1),
+            label: 'Cardeneta',
+          ),
+        ],
       ),
-
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: _buildIcon(MediaRes.mapIcon, 0),
-          label: 'Mapa',
-        ),
-        BottomNavigationBarItem(
-          icon: _buildIcon(MediaRes.bookletIcon, 1),
-          label: 'Cardeneta',
-        ),
-      ],
     );
   }
 

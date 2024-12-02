@@ -5,6 +5,7 @@ class MediaRes{
   static const String bookletIcon = 'assets/icons/booklet.svg';
   static const String splashLoadingGif = 'assets/icons/splash_loading.gif';
   static const String markerItem = 'assets/icons/marker_item.svg';
+  static const String savedZipcode = 'assets/icons/saved_zipcode.svg';
 
 
   /// Backgrounds

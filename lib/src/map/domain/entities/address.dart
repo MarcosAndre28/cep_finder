@@ -3,29 +3,31 @@ import 'package:equatable/equatable.dart';
 
 class Address extends Equatable {
   const Address({
-    required this.cep,
+    required this.zipcode,
     required this.state,
     required this.city,
     required this.location,
-     this.service,
-     this.neighborhood,
-     this.street,
-     this.number,
-     this.complement,
+    this.service,
+    this.neighborhood,
+    this.street,
+    this.number,
+    this.complement,
+    this.saved,
   });
 
   const Address.empty()
       : this(
-          cep: '',
+          zipcode: '',
           state: '',
           city: '',
           neighborhood: '',
           street: '',
           service: '',
+          saved: false,
           location: const LocationAddress.empty(),
         );
 
-  final String cep;
+  final String zipcode;
   final String state;
   final String city;
   final LocationAddress location;
@@ -34,13 +36,14 @@ class Address extends Equatable {
   final String? street;
   final int? number;
   final String? complement;
+  final bool? saved;
 
   @override
-  List<Object?> get props => [cep, state, city];
+  List<Object?> get props => [zipcode, state, city];
 
   @override
   String toString() {
-    return 'Address(cep: $cep, state: $state, city: $city, '
+    return 'Address(cep: $zipcode, state: $state, city: $city, '
         'neighborhood: $neighborhood, street: $street, '
         'service: $service, location: $location)';
   }

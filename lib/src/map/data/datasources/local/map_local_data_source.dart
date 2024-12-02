@@ -22,13 +22,14 @@ class OnMapLocalDataSourceImpl extends OnMapLocalDataSource {
   @override
   Future<void> saveAddress(AddressModel address) async {
     final  addressMap = {
-      'cep': address.cep,
+      'cep': address.zipcode,
       'state': address.state,
       'city': address.city,
       'neighborhood': address.neighborhood,
       'street': address.street,
       'number': address.number,
       'complement': address.complement,
+      'saved': address.saved,
       'location': {
         'coordinates': {
           'longitude': address.location.coordinates.longitude,

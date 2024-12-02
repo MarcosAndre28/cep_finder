@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cep_finder/core/common/widgets/bottom_navigation_bar.dart';
@@ -28,177 +29,218 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController cepController = TextEditingController();
+  final FocusNode cepFocusNode = FocusNode();
   GoogleMapController? _controller;
   Location location = Location();
   bool isShowSearchIcon = false;
   bool isShowHistory = false;
-  bool _permissionsGranted = false;
   Set<Marker> markers = {};
   List<AddressModel> addressList = [];
 
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
     getHistory();
   }
 
   @override
   void dispose() {
     cepController.dispose();
+    cepFocusNode.unfocus();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final onMapBloc = context.watch<OnMapBloc>();
-    return _permissionsGranted
-        ? SafeArea(
-            child: Scaffold(
-              body: BlocListener<OnMapBloc, OnMapState>(
-                listener: (context, state) {
-                  if (state is MapCepDataState) {
-                    setState(() {
-                      isShowHistory = false;
-                    });
-                    _addMarker(state.addressModel);
-                  }
-                  if (state is GetSavedAddressState) {
-                    if (state.addressModelList.isNotEmpty) {
-                      setState(() {
-                        addressList = state.addressModelList;
-                      });
-                    }
-                  }
+    final onMapBloc = context.watch<OnMapBloc>().state;
+    return Scaffold(
+      body: BlocListener<OnMapBloc, OnMapState>(
+        listener: (context, state) {
+          if (state is MapCepDataState) {
+            setState(() {
+              isShowHistory = false;
+            });
+            _addMarker(state.addressModel);
+          }
+          if (state is GetSavedAddressState) {
+            if (state.addressModelList.isNotEmpty) {
+              setState(() {
+                addressList = state.addressModelList;
+              });
+            }
+          }
 
-                  if (state is MapError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
+          if (state is MapError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          }
+        },
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(37.7749, -122.4194),
+                zoom: 12,
+              ),
+              onMapCreated: _onMapCreated,
+              markers: markers,
+              compassEnabled: false,
+            ),
+            if (isShowHistory && addressList.isNotEmpty)
+              onMapBloc is MapLoadingState
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colours.tealBlue,
                       ),
-                    );
-                  }
-                },
-                child: onMapBloc is MapLoadingState
-                    ? const Center(child: CircularProgressIndicator())
-                    : Stack(
-                        children: [
-                          GoogleMap(
-                            initialCameraPosition: const CameraPosition(
-                              target: LatLng(37.7749, -122.4194),
-                              zoom: 12,
-                            ),
-                            onMapCreated: _onMapCreated,
-                            markers: markers,
-                            compassEnabled: false,
-                          ),
-                          if (isShowHistory && addressList.isNotEmpty)
-                            Container(
-                              height: context.height * 0.4,
-                              padding: EdgeInsets.symmetric(
-                                vertical: context.height * 0.07,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, -5),
-                                  ),
-                                ],
-                              ),
-                              child: ListView.builder(
-                                itemCount: addressList.length,
-                                itemBuilder: (context, index) {
-                                  final addressData = addressList[index];
-                                  return ListSearchItemsMapWidget(
-                                    zipCode: addressData.cep,
-                                    street: addressData.street ?? 'Rua não encontrada',
-                                    city: addressData.city,
-                                    onTap: (cep) {
-                                      print('CEP selecionado: $cep');
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          Align(
-                            alignment: Alignment.topCenter,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: context.height * 0.02,
-                                horizontal: context.width * 0.05,
-                              ),
-                              child: Material(
-                                elevation: 15,
-                                borderRadius: BorderRadius.circular(10),
-                                shadowColor: Colors.black.withOpacity(0.1),
-                                child: DefaultTextFormField(
-                                  controller: cepController,
-                                  contentPadding: const EdgeInsets.all(15),
-                                  hintText: 'Buscar',
-                                  hintStyle: const TextStyle(
-                                    color: Colours.grey,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                  ),
-                                  textStyle: const TextStyle(
-                                    color: Colours.grey,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                  ),
-                                  prefixIcon: const Icon(
-                                    Icons.search,
-                                    color: Colours.grey,
-                                    size: 30,
-                                  ),
-                                  suffixIcon: cepController.text.isNotEmpty ? const Icon(Icons.close) : null,
-                                  keyboardType: TextInputType.number,
-                                  onTap: () {
-                                    setState(() {
-                                      isShowSearchIcon = !isShowSearchIcon;
-                                      isShowHistory = !isShowHistory;
-                                    });
-                                  },
-                                  onChanged: (text) {
-                                    setState(() {
-                                      isShowHistory = text.isNotEmpty;
-                                    });
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    CepInputFormatter(),
-                                  ],
-                                ),
-                              ),
-                            ),
+                    )
+                  : Container(
+                      height: context.height,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, -5),
                           ),
                         ],
                       ),
-              ),
-              floatingActionButton: isShowSearchIcon
-                  ? FloatingActionButton(
-                      backgroundColor: Colors.teal,
-                      shape: const CircleBorder(),
-                      elevation: 10,
-                      child: const Icon(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.height * 0.12,
+                        ),
+                        child: ListView.builder(
+                          itemCount: addressList.length,
+                          itemBuilder: (context, index) {
+                            final addressData = addressList[index];
+                            return ListSearchItemsMapWidget(
+                              zipCode: addressData.zipcode,
+                              street: addressData.street ?? '',
+                              city: addressData.city,
+                              onTap: (cep) {
+                                _addMarker(addressData);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: context.height * 0.06,
+                  horizontal: context.width * 0.05,
+                ),
+                child: Material(
+                  elevation: 15,
+                  borderRadius: BorderRadius.circular(10),
+                  shadowColor: Colors.black.withOpacity(0.5),
+                  child: Form(
+                    key: _formKey,
+                    child: DefaultTextFormField(
+                      controller: cepController,
+                      focusNode: cepFocusNode,
+                      contentPadding: const EdgeInsets.all(15),
+                      hintText: 'Buscar',
+                      hintStyle: const TextStyle(
+                        color: Colours.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
+                      textStyle: const TextStyle(
+                        color: Colours.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
+                      prefixIcon: const Icon(
                         Icons.search,
-                        color: Colours.white,
+                        color: Colours.grey,
                         size: 30,
                       ),
-                      onPressed: () {
-                        getCepData(cepController.text);
+                      suffixIcon: cepController.text.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isShowSearchIcon = false;
+                                  isShowHistory = false;
+                                  cepController.clear();
+                                  cepFocusNode.unfocus();
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.clear,
+                              ),
+                            )
+                          : null,
+                      keyboardType: TextInputType.number,
+                      onTap: () {
+                        setState(() {
+                          isShowSearchIcon = true;
+                          isShowHistory = true;
+                        });
                       },
-                    )
-                  : null,
-              bottomNavigationBar: const BottomNavigationBarWidget(
-                currentIndex: 0,
+                      onChanged: (text) {
+                        setState(() {
+                          isShowHistory = text.isNotEmpty;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'O campo não pode estar vazio.';
+                        }
+                        if (value.replaceAll(RegExp(r'\D'), '').length != 8) {
+                          return 'CEP deve ter 8 números.';
+                        }
+                        return null;
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        CepInputFormatter(),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          )
-        : const Center(child: CircularProgressIndicator());
+          ],
+        ),
+      ),
+      floatingActionButton: isShowSearchIcon
+          ? FloatingActionButton(
+              backgroundColor: Colors.teal,
+              shape: const CircleBorder(),
+              elevation: 10,
+              child: const Icon(
+                Icons.search,
+                color: Colours.white,
+                size: 30,
+              ),
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  cepFocusNode.unfocus();
+                  getCepData(cepController.text);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Por favor, insira um CEP valido.',
+                      ),
+                    ),
+                  );
+                }
+              },
+            )
+          : null,
+      bottomNavigationBar: const BottomNavigationBarWidget(
+        currentIndex: 0,
+      ),
+    );
   }
 
   void getCepData(String cep) {
@@ -215,12 +257,11 @@ class _MapPageState extends State<MapPage> {
 
     final position = LatLng(latitude, longitude);
 
-    // Cria o marcador
     final marker = Marker(
-      markerId: MarkerId(location.cep),
+      markerId: MarkerId(location.zipcode),
       position: position,
       infoWindow: InfoWindow(
-        title: location.street ?? 'Sem nome de rua',
+        title: location.street ?? '',
         snippet: '${location.city}, ${location.state}',
       ),
       onTap: () {
@@ -272,7 +313,7 @@ class _MapPageState extends State<MapPage> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            location.cep,
+                            location.zipcode,
                             style: TextStyle(
                               fontSize: context.height * 0.026,
                               fontFamily: Fonts.roboto,
@@ -282,9 +323,9 @@ class _MapPageState extends State<MapPage> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            '${location.street ?? 'Rua não encontrada. '
-                                'Este CEP pode ser de uma cidade ou região.'}'
-                            '- ${location.city}, ${location.state}',
+                            location.street != null && location.street!.isNotEmpty
+                                ? '${location.street} - ${location.city}, ${location.state}'
+                                : '${location.city}, ${location.state}',
                             style: TextStyle(
                               fontSize: context.height * 0.018,
                               fontFamily: Fonts.roboto,
@@ -295,9 +336,7 @@ class _MapPageState extends State<MapPage> {
                           const SizedBox(height: 15),
                           DefaultButton(
                             onPressed: () {
-                              context.go('/revision');
-
-                              //saveAddress(location);
+                              context.go('/revision', extra: location);
                               Navigator.pop(context);
                             },
                             child: Text(
@@ -326,38 +365,28 @@ class _MapPageState extends State<MapPage> {
       markers.add(marker);
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(latitude, longitude),
-            zoom: 15,
-          ),
-        ),
-      );
-    });
+    _onCameraMove(latitude: latitude, longitude: longitude);
   }
 
-  Future<void> _requestPermissions() async {
-    final permissions = await [
-      Permission.location,
-    ].request();
-    if (permissions.values.every((permission) => permission.isGranted)) {
-      setState(() {
-        _permissionsGranted = true;
-      });
-    } else {
-      setState(() {
-        _permissionsGranted = false;
-      });
-    }
+  void _onCameraMove({required double latitude, required double longitude}) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _controller?.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(latitude, longitude),
+              zoom: 15,
+            ),
+          ),
+        );
+        setState(() {
+          isShowHistory = false;
+        });
+      },
+    );
   }
 
   void getHistory() {
     context.read<OnMapBloc>().add(const GetSavedAddressEvent());
-  }
-
-  void saveAddress(AddressModel address) {
-    context.read<OnMapBloc>().add(SaveAddressEvent(address));
   }
 }

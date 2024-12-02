@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class DefaultTextFormField extends StatelessWidget {
-  const DefaultTextFormField({
+   DefaultTextFormField({
     this.controller,
     this.filled = true,
     this.readOnly = false,
@@ -31,12 +31,14 @@ class DefaultTextFormField extends StatelessWidget {
     this.inputFormatters,
     this.useDefaultValidator = false,
     this.breakErrorText = false,
+    this.onFieldSubmitted,
     this.prefixText,
     this.errorStyle,
     super.key,
   });
 
   final TextEditingController? controller;
+  void Function(String)? onFieldSubmitted;
   final bool filled;
   final bool obscureText;
   final bool readOnly;
@@ -95,8 +97,10 @@ class DefaultTextFormField extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.start,
       maxLines: maxLines,
       inputFormatters: inputFormatters,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: decoration?.copyWith(
             errorStyle: errorStyle,
+
           ) ??
           InputDecoration(
             hintText: hintText,
@@ -106,6 +110,7 @@ class DefaultTextFormField extends StatelessWidget {
             contentPadding: contentPadding ?? const EdgeInsets.only(left: 16, right: 16),
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
               borderSide: BorderSide.none,

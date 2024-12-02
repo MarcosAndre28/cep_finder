@@ -9,4 +9,5 @@ class Colours {
   static const quartz = Color(0xFF49454F);
   static const black = Color(0xFF1C1B1F);
   static const cadet = Color(0xFF5E6772);
+  static const cultured = Color(0xFFF6F6F6);
 }

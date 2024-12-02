@@ -1,5 +1,5 @@
 import 'package:cep_finder/core/common/widgets/bottom_navigation_bar.dart';
-import 'package:cep_finder/src/booklet/presentation/views/passbook.dart';
+import 'package:cep_finder/src/booklet/presentation/views/passbook_page.dart';
 import 'package:cep_finder/src/map/presentation/views/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
