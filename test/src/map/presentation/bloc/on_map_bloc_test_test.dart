@@ -167,7 +167,6 @@ void main() {
         ),
       );
 
-      // Configurar o mock para lançar uma exceção.
       when(() => mockSaveAddressUseCase.call(addressModel: addressToSave)).thenThrow(Exception('Erro ao salvar endereço'));
 
       bloc.add(const SaveAddressEvent(addressToSave));
