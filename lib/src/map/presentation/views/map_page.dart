@@ -57,6 +57,7 @@ class _MapPageState extends State<MapPage> {
           if (state is MapCepDataState) {
             setState(() {
               isShowHistory = false;
+              isShowSearchIcon = false;
             });
             _addMarker(state.addressModel);
           }
@@ -80,7 +81,7 @@ class _MapPageState extends State<MapPage> {
               compassEnabled: false,
               zoomControlsEnabled: false,
             ),
-            if (isShowHistory && addressList.isNotEmpty)
+            if (isShowHistory)
               onMapBloc is MapLoadingState
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -103,7 +104,16 @@ class _MapPageState extends State<MapPage> {
                         padding: EdgeInsets.symmetric(
                           vertical: context.height * 0.12,
                         ),
-                        child: ListView.builder(
+                        child: addressList.isEmpty ? const Center(
+                          child: Text(
+                            'Nenhum endereço salvo',
+                            style: TextStyle(
+                              fontFamily: Fonts.roboto,
+                              color: Colours.tealBlue,
+                              fontSize: 18,
+                            ),
+                          )
+                        ):ListView.builder(
                           itemCount: addressList.length,
                           itemBuilder: (context, index) {
                             final addressData = addressList[index];
