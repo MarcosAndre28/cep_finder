@@ -38,8 +38,9 @@ class Address extends Equatable {
   final String? complement;
   final bool? saved;
 
+
   @override
-  List<Object?> get props => [zipcode, state, city];
+  List<Object?> get props => [zipcode, state, city, neighborhood, street, service, location];
 
   @override
   String toString() {

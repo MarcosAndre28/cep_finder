@@ -4,8 +4,8 @@ import 'package:cep_finder/src/map/domain/entities/location_addres.dart';
 
 class LocationModel extends LocationAddress {
   const LocationModel({
-    required super.type,
     required super.coordinates,
+    super.type,
   });
 
   const LocationModel.empty()

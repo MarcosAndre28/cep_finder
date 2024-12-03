@@ -52,7 +52,7 @@ extension BlocSafeRun<BlocEvent, BlocState> on Bloc<BlocEvent, BlocState> {
       return e.message;
     }
 
-    return 'Erro desconhecido: ${e.toString()}';
+    return e.toString().split(':').last.trim();
   }
 
   void _log(Object e, StackTrace s) {

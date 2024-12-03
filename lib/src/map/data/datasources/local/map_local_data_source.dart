@@ -1,9 +1,5 @@
-import 'dart:convert';
-
-import 'package:cep_finder/core/utils/typedefs.dart';
 import 'package:cep_finder/src/map/data/model/address_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class OnMapLocalDataSource {
   const OnMapLocalDataSource();

@@ -1,3 +1,4 @@
+import 'package:cep_finder/core/utils/typedefs.dart';
 import 'package:equatable/equatable.dart';
 
 class Coordinates extends Equatable {
@@ -13,6 +14,12 @@ class Coordinates extends Equatable {
 
   @override
   List<Object?> get props => [latitude, longitude];
+
+
+  factory Coordinates.fromMap(DataMap map) => Coordinates(
+        longitude: map['longitude'] as String,
+        latitude: map['latitude'] as String,
+      );
 
   @override
   String toString() {
