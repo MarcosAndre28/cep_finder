@@ -269,7 +269,7 @@ class _MapPageState extends State<MapPage> {
                 child: InkWell(
                   onTap: () {},
                   child: Container(
-                    height: context.height * 0.28,
+                    height: context.height * 0.30,
                     width: context.width,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(

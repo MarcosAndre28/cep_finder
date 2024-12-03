@@ -9,13 +9,13 @@ class AppMessenger {
       ?..removeCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          duration: duration ?? const Duration(seconds: 1),
+          duration: duration ?? const Duration(seconds: 5),
           behavior: SnackBarBehavior.floating,
           elevation: 150.0,
-          backgroundColor: const Color(0xFFda5265),
           content: Text(
             message,
             style: const TextStyle(
+              fontSize: 16,
               color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),

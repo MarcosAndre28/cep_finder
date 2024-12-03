@@ -13,6 +13,9 @@ final ThemeData appTheme = ThemeData(
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   ),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor:  Color(0xFFda5265),
+  ),
   scaffoldBackgroundColor: Colors.white,
   fontFamily: Fonts.roboto,
   highlightColor: Colors.transparent,

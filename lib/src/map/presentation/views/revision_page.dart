@@ -65,159 +65,170 @@ class _RevisionPageState extends State<RevisionPage> {
         ),
         body: onMapBloc is MapLoadingState
             ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colours.tealBlue,
-                ),
-              )
+          child: CircularProgressIndicator(
+            color: Colours.tealBlue,
+          ),
+        )
             : Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 30,
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        DefaultTextFormField(
-                          controller: zipCodeController,
-                          hintText: 'CEP',
-                          readOnly: true,
-                          textStyle: TextStyle(
-                            fontSize: context.height * 0.025,
-                            fontFamily: Fonts.roboto,
-                            fontWeight: FontWeight.w600,
-                            color: Colours.grey,
-                          ),
-                          decoration: InputDecoration(
-                            label: Text(
-                              'CEP',
-                              style: TextStyle(
-                                fontSize: context.height * 0.02,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: Fonts.roboto,
-                              ),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            floatingLabelAlignment: FloatingLabelAlignment.start,
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                            ),
-                          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 30,
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      DefaultTextFormField(
+                        controller: zipCodeController,
+                        hintText: 'CEP',
+                        readOnly: true,
+                        textStyle: TextStyle(
+                          fontSize: context.height * 0.025,
+                          fontFamily: Fonts.roboto,
+                          fontWeight: FontWeight.w600,
+                          color: Colours.grey,
                         ),
-                        SizedBox(height: context.height * 0.03),
-                        DefaultTextFormField(
-                          controller: addressController,
-                          hintText: 'Endereço',
-                          textStyle: TextStyle(
-                            fontSize: context.height * 0.025,
-                            fontFamily: Fonts.roboto,
-                            fontWeight: FontWeight.w600,
-                            color: Colours.grey,
-                          ),
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            label: Text(
-                              'Endereço',
-                              style: TextStyle(
-                                fontSize: context.height * 0.02,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: Fonts.roboto,
-                              ),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            floatingLabelAlignment: FloatingLabelAlignment.start,
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: context.height * 0.03),
-                        DefaultTextFormField(
-                          controller: numberController,
-                          hintText: 'Número',
-                          keyboardType: TextInputType.number,
-                          textStyle: TextStyle(
-                            fontSize: context.height * 0.025,
-                            fontFamily: Fonts.roboto,
-                            fontWeight: FontWeight.w600,
-                            color: Colours.black,
-                          ),
-                          decoration: InputDecoration(
-                            label: Text(
-                              'Número',
-                              style: TextStyle(
-                                fontSize: context.height * 0.02,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: Fonts.roboto,
-                              ),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            floatingLabelAlignment: FloatingLabelAlignment.start,
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colours.tealBlue),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: context.height * 0.03),
-                        DefaultTextFormField(
-                          controller: complementController,
-                          hintText: 'Complemento',
-                          textStyle: TextStyle(
-                            fontSize: context.height * 0.025,
-                            fontFamily: Fonts.roboto,
-                            fontWeight: FontWeight.w600,
-                            color: Colours.black,
-                          ),
-                          decoration: InputDecoration(
-                            label: Text(
-                              'Complemento',
-                              style: TextStyle(
-                                fontSize: context.height * 0.02,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: Fonts.roboto,
-                              ),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colours.tealBlue),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            floatingLabelAlignment: FloatingLabelAlignment.start,
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DefaultButton(
-                          onPressed: () {
-                            final updatedAddress = widget.addressModel.copyWith(
-                              number: int.tryParse(numberController.text),
-                              complement: complementController.text,
-                              saved: true,
-                            );
-                            saveAddress(updatedAddress);
-                          },
-                          child: Text(
-                            'Confirmar',
+                        decoration: InputDecoration(
+                          label: Text(
+                            'CEP',
                             style: TextStyle(
-                              color: Colours.white,
-                              fontSize: context.height * 0.020,
+                              fontSize: context.height * 0.02,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: Fonts.roboto,
                             ),
+                          ),
+                          labelStyle: const TextStyle(color: Colours.grey),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: context.height * 0.03),
+                      DefaultTextFormField(
+                        controller: addressController,
+                        hintText: 'Endereço',
+                        textStyle: TextStyle(
+                          fontSize: context.height * 0.025,
+                          fontFamily: Fonts.roboto,
+                          fontWeight: FontWeight.w600,
+                          color: Colours.grey,
+                        ),
+                        readOnly: true,
+
+                        decoration: InputDecoration(
+                          label: Text(
+                            'Endereço',
+                            style: TextStyle(
+                              fontSize: context.height * 0.02,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: Fonts.roboto,
+                            ),
+                          ),
+                          labelStyle: const TextStyle(color: Colours.grey),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: context.height * 0.03),
+                      DefaultTextFormField(
+                        controller: numberController,
+                        hintText: 'Número',
+                        keyboardType: TextInputType.number,
+                        textStyle: TextStyle(
+                          fontSize: context.height * 0.025,
+                          fontFamily: Fonts.roboto,
+                          fontWeight: FontWeight.w600,
+                          color: Colours.black,
+                        ),
+                        decoration: InputDecoration(
+                          label: Text(
+                            'Número',
+                            style: TextStyle(
+                              fontSize: context.height * 0.02,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: Fonts.roboto,
+                              color: Colours.grey,
+                            ),
+                          ),
+                          labelStyle: const TextStyle(color: Colours.grey),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colours.grey),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: context.height * 0.03),
+                      DefaultTextFormField(
+                        controller: complementController,
+                        hintText: 'Complemento',
+                        textStyle: TextStyle(
+                          fontSize: context.height * 0.025,
+                          fontFamily: Fonts.roboto,
+                          fontWeight: FontWeight.w600,
+                          color: Colours.black,
+                        ),
+                        decoration: InputDecoration(
+                          label: Text(
+                            'Complemento',
+                            style: TextStyle(
+                              fontSize: context.height * 0.02,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: Fonts.roboto,
+                            ),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colours.grey),
+                          ),
+                          labelStyle: const TextStyle(color: Colours.grey),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+              SizedBox(height: context.height * 0.03),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: DefaultButton(
+                    onPressed: () {
+                      final updatedAddress = widget.addressModel.copyWith(
+                        number: int.tryParse(numberController.text),
+                        complement: complementController.text,
+                        saved: true,
+                      );
+                      saveAddress(updatedAddress);
+                    },
+                    child: Text(
+                      'Confirmar',
+                      style: TextStyle(
+                        color: Colours.white,
+                        fontSize: context.height * 0.020,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

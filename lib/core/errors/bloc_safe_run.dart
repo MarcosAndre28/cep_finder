@@ -5,6 +5,8 @@ import 'package:cep_finder/core/common/widgets/app_messenger.dart';
 import 'package:cep_finder/core/errors/app_exception.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'api_exception.dart';
+
 extension BlocSafeRun<BlocEvent, BlocState> on Bloc<BlocEvent, BlocState> {
   void onSafe<E extends BlocEvent>(
     EventHandler<E, BlocState> handler, {
@@ -22,6 +24,11 @@ extension BlocSafeRun<BlocEvent, BlocState> on Bloc<BlocEvent, BlocState> {
           String errorMessage = _getErrorMessage(e);
 
           bool shouldShowDefaultMessage = errorState != null ? false : true;
+          if (e is ApiException) {
+            errorMessage = e.message;
+            AppMessenger.showErrorSnackBar(errorMessage);
+          }
+
           if (e is Exception && exceptionHandler != null) {
             shouldShowDefaultMessage = !exceptionHandler(e, errorMessage, emitter, blocEvent);
           }

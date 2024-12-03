@@ -4,6 +4,8 @@ import 'package:cep_finder/core/theme/theme_app.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'core/common/widgets/app_messenger.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -22,6 +24,7 @@ class MyApp extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: child,
       ),
+      scaffoldMessengerKey: AppMessenger.messengerKey,
       debugShowCheckedModeBanner: false,
       theme: appTheme,
       routerConfig: appRouter,

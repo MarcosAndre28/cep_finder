@@ -33,6 +33,6 @@ class ApiException extends AppException {
       }
     } catch (_) {}
 
-    return 'Ops, ocorreu um problema.\nPor favor, tente novamente';
+    return 'Cep não encontrado. Por favor verifique os dados digitados e tente novamente';
   }
 }
