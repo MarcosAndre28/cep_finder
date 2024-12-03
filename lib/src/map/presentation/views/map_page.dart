@@ -261,8 +261,8 @@ class _MapPageState extends State<MapPage> {
       markerId: MarkerId(location.zipcode),
       position: position,
       infoWindow: InfoWindow(
-        title: location.street ?? '',
-        snippet: '${location.city}, ${location.state}',
+        title: location.zipcode,
+        snippet: '${location.street ?? ''}, ${location.state}',
       ),
       onTap: () {
         showModalBottomSheet(
