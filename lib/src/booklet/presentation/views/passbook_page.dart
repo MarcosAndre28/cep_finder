@@ -82,7 +82,11 @@ class _BookletPageState extends State<BookletPage> {
                     size: 30,
                   ),
                   suffixIcon: searchController.text.isNotEmpty
-                      ? const Icon(Icons.close)
+                      ? IconButton(onPressed: () {
+                    setState(() {
+                      searchController.clear();
+                    });
+                  }, icon: const Icon(Icons.clear))
                       : null,
                   onChanged: (text) {
                     setState(() {

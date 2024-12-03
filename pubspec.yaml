@@ -42,7 +42,6 @@ flutter:
   assets:
     - assets/lottie/
     - assets/icons/
-    - .env
 
   fonts:
     - family: Roboto

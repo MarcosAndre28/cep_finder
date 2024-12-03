@@ -8,10 +8,36 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def environment = "PROD"
+
+def getGitBranchName() {
+    def branch = ''
+    try {
+        def process = "git rev-parse --abbrev-ref HEAD".execute()
+        branch = process.text.trim()
+        branch = branch.replace('/', '-')
+    } catch (ignored) {
+        println "Não foi possível obter o nome da branch do Git."
+    }
+    return branch
+}
+
 android {
     namespace = "br.com.cepfinder.cep_finder"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def appName = "Cep Finder"
+            def version = variant.versionName
+            def variantName = variant.name
+            def branchName = getGitBranchName()
+            def date = new Date().format("dd-MM-yyyy-HH-mm-ss")
+            def newApkName = "${appName}-version-${version}_${environment}-${variantName}-branch-${branchName}_${date}.apk"
+            output.outputFileName = newApkName
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
