@@ -85,7 +85,9 @@ class _BookletPageState extends State<BookletPage> {
                       ? IconButton(onPressed: () {
                     setState(() {
                       searchController.clear();
+                      filteredAddressList = List.from(addressList);
                     });
+
                   }, icon: const Icon(Icons.clear))
                       : null,
                   onChanged: (text) {
